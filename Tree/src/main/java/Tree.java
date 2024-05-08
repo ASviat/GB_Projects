@@ -1,18 +1,7 @@
 import java.io.File;
 
 public class Tree {
-//    Домашнее задание:
-//
-//            1. Написать функцию, создающую резервную копию всех файлов в директории во вновь созданную папку ./backup
-//2. Доработайте класс Tree и метод print который мы разработали на семинаре.
-// Ваш метод должен распечатать полноценное дерево директорий и файлов относительно корневой директории.
 
-
-    /**
-     * TODO: Доработать метод print, необходимо распечатывать директории и файлы
-     *
-     * @param args
-     */
     public static void main(String[] args) {
         print(new File("."), "", true);
     }
@@ -26,46 +15,63 @@ public class Tree {
             System.out.print("├─");
             indent += "│ ";
         }
+
         System.out.println(file.getName());
 
         File[] files = file.listFiles();
-//        for(File i : files){
-//            if(i.isDirectory())
-//            System.out.print(i+" ");
-//        }
 
         int subDirTotal = 0;
+        int subFileTotal = 0;
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory()) {
                 subDirTotal++;
             }
+            if (files[i].isFile()) {
+                subFileTotal++;
+            }
+        }
+        if (subFileTotal > 0) {
+            printFiles(file, indent, subFileTotal);
         }
 
         int subDirCounter = 0;
         for (int i = 0; i < files.length; i++) {
             if (files[i].isDirectory()) {
                 print(files[i], indent, subDirTotal == ++subDirCounter);
-
-                printFiles(files[i], indent);
             }
         }
     }
 
-    public static void printFiles(File directory, String indent) {
+    /**
+     * Prints files from directory
+     *
+     * @param directory    directory, which files must be printed
+     * @param indent       String to hold formatting
+     * @param subFileTotal counter of files in directory
+     */
+    public static void printFiles(File directory, String indent, int subFileTotal) {
         File[] files = directory.listFiles();
-
+        int counter = 0;
         for (int i = 0; i < files.length; i++) {
-            if (i == files.length - 1 && files[i].isFile()) {
-                System.out.print(indent + "│ ");
-                System.out.print("└─");
-            } else if (files[i].isFile()) {
-                System.out.print(indent + "│ ");
-                System.out.print("├─");
+            if (files[i].isDirectory()) {
+                counter++;
             }
-            System.out.println(files[i].getName());
+            if (subFileTotal == 1 && files[i].isFile() && counter == 0) {
+                System.out.print(indent);//+ "│ "
+                System.out.print("└─");
+                System.out.println(files[i].getName());
+            } else if (subFileTotal == 1 && files[i].isFile() && counter > 0) {
+                System.out.print(indent);
+                System.out.print("├─");
+                System.out.println(files[i].getName());
+            } else if (files[i].isFile()) {
+                System.out.print(indent);
+                System.out.print("├─");
+                System.out.println(files[i].getName());
+                subFileTotal--;
+            }
         }
     }
-
 }
 
 
